@@ -86,12 +86,15 @@ public class RecognizeImage extends BufferedImage {
     public RecognizeImage binary() {
         int threshold = getThreshold();
 
+        Color dominate = dominate(threshold) == 1 ? Color.WHITE : Color.BLACK;
+        Color recessive = dominate(threshold) == 1 ? Color.BLACK : Color.WHITE;
+
         for (int i = 1; i < getWidth() - 1; i++) {
             for (int j = 1; j < getHeight() - 1; j++) {
                 if (getLightness(i, j) > threshold) {
-                    setRGB(i, j, Color.WHITE.getRGB());
+                    setRGB(i, j, dominate.getRGB());
                 } else {
-                    setRGB(i, j, Color.BLACK.getRGB());
+                    setRGB(i, j, recessive.getRGB());
                 }
             }
         }
@@ -178,5 +181,19 @@ public class RecognizeImage extends BufferedImage {
         threshold += min;
 
         return threshold;
+    }
+    private int dominate(int threshold) {
+        int first = 0, second = 0;
+
+        for (int i = 0; i < getWidth(); i++) {
+            for(int j = 0; j < getHeight(); j++) {
+                if (getLightness(i, j) > threshold) {
+                    first++;
+                } else {
+                    second++;
+                }
+            }
+        }
+        return first > second ? 1 : 0;
     }
 }
